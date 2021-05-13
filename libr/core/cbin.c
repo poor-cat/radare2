@@ -743,6 +743,20 @@ R_API void r_core_anal_cc_init(RCore *core) {
 	if (!anal_arch) {
 		return;
 	}
+#if HAVE_GPERF
+	char *k = r_str_newf ("cc_%s_%d", anal_arch, bits);
+	SdbGperf *gp = r_anal_get_gperf (k);
+	free (k);
+	if (gp) {
+		Sdb *gd = sdb_new0 ();
+		sdb_open_gperf (gd, gp);
+		sdb_reset (core->anal->sdb_cc);
+		sdb_merge (core->anal->sdb_cc, gd);
+		sdb_close (gd);
+		sdb_free (gd);
+		return;
+	}
+#endif
 	char *dbpath = r_str_newf (R_JOIN_3_PATHS ("%s", R2_SDB_FCNSIGN, "cc-%s-%d.sdb"),
 		dir_prefix, anal_arch, bits);
 	char *dbhomepath = r_str_newf (R_JOIN_3_PATHS ("~", R2_HOME_SDB_FCNSIGN, "cc-%s-%d.sdb"),

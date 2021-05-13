@@ -6,9 +6,12 @@ F+= types-32
 F+= types-64
 F+= types-android
 F+= types-darwin
+ifneq ($(HAVE_GPERF),1)
+# those are extremely large and make GNU/gperf take forever
 F+= types-windows
 F+= types-x86-windows-32
 F+= types-x86-windows-64
+endif
 F+= types-linux
 F+= types-x86-macos-64
 F+= types-arm-ios-16
@@ -99,16 +102,18 @@ ifneq ($(SILENT),)
 	@rm -f $@
 	@cat $< $(EXTRA_FILES) | ${SDB} $@ =
 	@test -f $@
+	-$(SDB) -C $@
 else
 	rm -f $@
 	cat $< $(EXTRA_FILES) | ${SDB} $@ =
 	test -f $@
+	-$(SDB) -C $@
 endif
 
 clean:
-	rm -f *.sdb
+	rm -f *.sdb *.c
 
-${SDB}:
+$(SDB):
 	@echo "Cannot find ${SDB}"
 	@false
 

@@ -10,6 +10,18 @@ on:
 
 
 jobs:
+  build-acr-gperf:
+    name: linux-acr-gperf
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Installing with symlinks
+      run: |
+        sudo apt install gperf
+        export CFLAGS="-O2 -Werror -Wno-unused-result -Wno-stringop-truncation"
+        sys/install.sh
+        r2r test/db/cmd
   build-resymlink:
     name: linux-acr-resymlink
     runs-on: ubuntu-20.04
